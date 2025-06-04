@@ -23,5 +23,18 @@ namespace CleanRental
 
             return movies;
         }
+
+        internal List<Actor> GetAllActors()
+        {
+           var actors = Context.Actors.ToList();
+            return actors;
+        }
+
+        internal List<Category> GetAllCategories()
+        {
+            var movies = Context.Categories.ToList();
+
+            return movies;
+        }
     }
 }

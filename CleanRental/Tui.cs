@@ -51,6 +51,14 @@ namespace CleanRental
                     case "2":
                         Console.WriteLine("Exiting...");
                         return;
+                    case "10":
+                        Console.WriteLine("Show all actors:");
+                        DisplayAllActors();
+                        break;
+                    case "11":
+                        Console.WriteLine("Show all categories:");
+                        DisplayAllCategories();
+                        break;
                     default:
                         Console.WriteLine("Invalid choice, please try again.");
                         break;
@@ -58,6 +66,24 @@ namespace CleanRental
 
             }
 
+        }
+
+        private void DisplayAllCategories()
+        {
+            var categories = Logic.GetAllCategories();
+            foreach (var category in categories)
+            {
+                Console.WriteLine($"Category: {category.Name}");
+            }
+        }
+
+        private void DisplayAllActors()
+        {
+            var actors = Logic.GetAllActors();
+            foreach (var actor in actors)
+            {
+                Console.WriteLine($"ActorID: {actor.ActorId} ** {actor.FirstName} {actor.LastName} **");
+            }
         }
 
         private void DisplayAllMovies()

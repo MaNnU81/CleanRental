@@ -28,4 +28,6 @@
     </None>
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/aspire-8.0.json" /></VisualStudio></ProjectExtensions>
+
 </Project>
