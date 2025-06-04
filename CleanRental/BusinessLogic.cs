@@ -1,9 +1,10 @@
-﻿using System;
+﻿using CleanRental.model;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CleanRental.model;
 
 namespace CleanRental
 {
@@ -35,6 +36,50 @@ namespace CleanRental
             var movies = Context.Categories.ToList();
 
             return movies;
+        }
+        internal List<Film> GetMoviesByActorId(int actorId)
+        {
+            var movies = Context.Films
+                .Where(f => f.FilmActors.Any(fa => fa.ActorId == actorId))
+                .ToList();
+            return movies;
+        }
+
+        internal List<Film> GetAllComedyMovies()
+        {
+           var comedyMovies = Context.Films
+                  .Where(f => f.FilmCategories.Any(fc => fc.Category.Name == "Comedy"))
+                  .Include(f => f.FilmActors)
+                  .ThenInclude(fa => fa.Actor)
+                  .ToList();
+            return comedyMovies;
+        }
+        internal List<(string Country, int StoreNumber)> GetStoreByCountry()
+        {
+            return Context.Stores
+                .Include(s => s.Address)
+                    .ThenInclude(a => a.City)
+                    .ThenInclude(c => c.Country)
+                .AsEnumerable()
+                .GroupBy(s => s.Address.City.Country.Country1)
+                .Select(g => (Country: g.Key, StoreNumber: g.Count()))
+                .OrderByDescending(x => x.StoreNumber)
+                .ToList();
+        }
+
+        internal List<(int FilmId, string Title, int RentalCount)> GetMoviesRentalNumber()
+        {
+            return Context.Films
+                .Include(f => f.Inventories)
+                    .ThenInclude(i => i.Rentals)
+                .AsEnumerable()
+                .Select(f => (
+                    FilmId: f.FilmId,
+                    Title: f.Title,
+                    RentalCount: f.Inventories.Sum(i => i.Rentals.Count)
+                ))
+                .OrderByDescending(x => x.RentalCount)
+                .ToList();
         }
     }
 }
