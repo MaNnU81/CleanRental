@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Formats.Asn1.AsnWriter;
@@ -39,7 +40,7 @@ namespace CleanRental
                 Console.WriteLine("11. Show all categories");
                 Console.WriteLine("12. Show all movies with Actors");
 
-                Console.WriteLine(". Exit");
+                Console.WriteLine("13. Exit");
                 Console.Write("Select an option: ");
 
                 var choice = Console.ReadLine();
@@ -66,6 +67,21 @@ namespace CleanRental
                         Console.WriteLine("Movie rental number:");
                         DisplayMoviesRentalNumber();
                         break;
+                    case "6":
+                        Console.WriteLine("Actor by rental number:");
+                        DisplayActorsOrderedByRentalNumber();
+                        break;
+                    case "7":
+                        Console.WriteLine("Movie order By rental income:");
+                       DisplayActorsByRentalIncome();
+                        break;
+                    case "8":
+                        Console.WriteLine("Movie by genre:");
+                        DisplayMoviesByGenre();
+                        break;
+                    case "9":
+                        DisplayAllMoviesByActor();
+                        break;
                     case "10":
                         Console.WriteLine("Show all actors:");
                         DisplayAllActors();
@@ -75,8 +91,14 @@ namespace CleanRental
                         DisplayAllCategories();
                         break;
                     case "12":
-                        DisplayAllMoviesByActor();
+                        Console.WriteLine("Show all movies with actor:");
+                        DisplayAllMoviesWithActor();
                         break;
+
+                    case "13":
+                        Console.WriteLine("Exiting the application. Goodbye!");
+                        return;
+
                     default:
                         Console.WriteLine("Invalid choice, please try again.");
                         break;
@@ -86,14 +108,40 @@ namespace CleanRental
 
         }
 
+        private void DisplayAllMoviesWithActor()
+        {
+            throw new NotImplementedException();
+        }
 
+        private void DisplayMoviesByGenre()
+        {
+            DisplayAllCategories();
+            Console.Write("Enter genre ID to see their movies: ");
+            var choice = Console.ReadLine();
+            var categoryId = int.TryParse(choice, out var id) ? id : -1;
+            var movies = Logic.GetMoviesByCategoryId(categoryId);
+            foreach (var movie in movies)
+            {
+                Console.WriteLine($"id Category: {categoryId} - Film: {movie.FilmId} - {movie.Title}");
+            }
+
+        }
+
+        private void DisplayActorsByRentalIncome()
+        {
+            var moviesByRentalIncome = Logic.GetMoviesByRentalIncome();
+            foreach (var movie in moviesByRentalIncome)
+            {
+                Console.WriteLine($"Film: {movie.Title} - Rental Income: {movie.RentalIncome:C}");
+            }
+        }
 
         private void DisplayAllCategories()
         {
             var categories = Logic.GetAllCategories();
             foreach (var category in categories)
             {
-                Console.WriteLine($"Category: {category.Name}");
+                Console.WriteLine($"ID: {category.CategoryId} ** Category: {category.Name}");
             }
         }
         private void DisplayAllComedyMovies()
@@ -155,6 +203,14 @@ namespace CleanRental
         }
 
 
+        private void DisplayActorsOrderedByRentalNumber()
+        {
+            var actors = Logic.GetActorsOrderedByRentalNumber();
+            foreach (var actor in actors)
+            {
+                Console.WriteLine($"Actor: {actor.FirstName} {actor.LastName} - Rental Count: {actor.RentalCount}");
+            }
+        }
 
         private void DisplayAllActors()
         {

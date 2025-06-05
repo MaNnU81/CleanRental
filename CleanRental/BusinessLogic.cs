@@ -54,6 +54,7 @@ namespace CleanRental
                   .ToList();
             return comedyMovies;
         }
+
         internal List<(string Country, int StoreNumber)> GetStoreByCountry()
         {
             return Context.Stores
@@ -80,6 +81,54 @@ namespace CleanRental
                 ))
                 .OrderByDescending(x => x.RentalCount)
                 .ToList();
+        }
+
+        internal List<(int ActorId, string FirstName, string LastName , int RentalCount)> GetActorsOrderedByRentalNumber()
+        {
+            var actorsByRental = Context.Payments
+                .Include(p => p.Rental)
+                    .ThenInclude(r => r.Inventory)
+                        .ThenInclude(i => i.Film)
+                            .ThenInclude(f => f.FilmActors)
+                                .ThenInclude(fa => fa.Actor)
+                .AsEnumerable()
+                .SelectMany(p => p.Rental.Inventory.Film.FilmActors.Select(fa => fa.Actor))
+                .GroupBy(a => a.ActorId)
+                .Select(g => (
+                    ActorId: g.Key,
+                    FirstName: g.First().FirstName,
+                    LastName: g.First().LastName,
+                    RentalCount: g.Count()))
+                .OrderByDescending(x => x.RentalCount)
+                .ToList();
+            return actorsByRental;
+        }
+
+        internal List<Film> GetMoviesByCategoryId(object categoryId)
+        {
+            var movies = Context.Films
+
+                .Where(f => f.FilmCategories.Any(fc => fc.Category.CategoryId == (int)categoryId))
+                .ToList();
+            return movies;
+        }
+
+
+
+
+        internal List<Tuple<Film, decimal>> GetMoviesByRentalIncome()
+        {
+            var movieOrderByRentaleIncome = Context.Films
+                .Include(f => f.Inventories)
+                    .ThenInclude(i => i.Rentals)
+                    .ThenInclude(r => r.Payment)
+                    .Select(f => new Tuple<Film, decimal>(
+                        f,
+                        f.Inventories.Sum(i => i.Rentals.Sum(r => r.Payment.Amount))
+                    )).OrderByDescending(x => x.Item2).ToList();
+            
+
+
         }
     }
 }
